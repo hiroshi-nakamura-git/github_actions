@@ -1,45 +1,42 @@
-name: Delivery
-
-on: 
+on:
   push:
     branches:
       - main
 
+name: Build and Deploy a Container
 env:
-  GCP_PROJECT: ${{ secrets.GCP_PROJECT }}
-  GCP_REGION: ${{ secrets.GCP_REGION }}
-  IMAGE: gcr.io/githubaction-cloudrun-test/helloworld@sha256:74249e002d4585eb1bd1f37ca0dad956e74d76ddb8ebb179c408c0ae8a7b463b
+  PROJECT_ID: ${{ secrets.GCP_PROJECT }}
+  GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
+  SERVICE: example-app
+  REGION: asia-northeast1
+  IMAGE: gcr.io/${{ secrets.GCP_PROJECT }}/example-app:${{ github.sha }}
 
 jobs:
-  delivery:
-
+  deploy:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout the repository
-        uses: actions/checkout@v1
+      - name: Checkout
+        uses: actions/checkout@v2
 
-      - name: GCP Authenticate
-        uses: GoogleCloudPlatform/github-actions/setup-gcloud@v0.2.0
+      - name: Setup Cloud SDK
+        uses: google-github-actions/setup-gcloud@v0.2.0
         with:
-          version: '273.0.0'
-          service_account_email: ${{ secrets.GCP_SA_EMAIL }}
+          project_id: ${{ env.PROJECT_ID }}
           service_account_key: ${{ secrets.GCP_SA_KEY }}
+          export_default_credentials: true  # Set to true to authenticate the Cloud Run action
 
-      - name: Configure docker to use the gcloud cli
-        run: gcloud auth configure-docker --quiet
+      - name: Authorize Docker push
+        run: gcloud auth configure-docker
 
-      - name: Build a docker image
-        run: docker build . -t $IMAGE
-
-      - name: Push the docker image
-        run: docker push $IMAGE
+      - name: Build and Push Container
+        run: |-
+          docker build . -t ${{ env.IMAGE }}
+          docker push ${{ env.IMAGE }}
 
       - name: Deploy to Cloud Run
-        run: |
-            gcloud run deploy foobar \
-              --image $IMAGE \
-              --project $GCP_PROJECT \
-              --region $GCP_REGION \
-              --platform managed \
-              --quiet
+        id: deploy
+        uses: google-github-actions/deploy-cloudrun@v0.4.0
+        with:
+          service: ${{ env.SERVICE }}
+          image: ${{ env.IMAGE }}
+          region: ${{ env.REGION }}
