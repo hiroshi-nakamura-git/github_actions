@@ -5,11 +5,11 @@ on:
 
 name: Build and Deploy a Container
 env:
-  PROJECT_ID: githubaction-cloudrun-test
-  GCP_SA_KEY: 756f19ffef18ef1d1859c25583269c6f6539b762
+#  PROJECT_ID: githubaction-cloudrun-test
+#  GCP_SA_KEY: 756f19ffef18ef1d1859c25583269c6f6539b762
   SERVICE: example-app
   REGION: asia-northeast1
-  IMAGE: gcr.io/${{ secrets.GCP_PROJECT }}/example-app:${{ github.sha }}
+  IMAGE: gcr.io/githubaction-cloudrun-test/helloworld
 
 jobs:
   deploy:
