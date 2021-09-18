@@ -18,12 +18,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Setup Cloud SDK
-        uses: google-github-actions/setup-gcloud@v0.2.0
-        with:
-          project_id: githubaction-cloudrun-test
-          service_account_key: 756f19ffef18ef1d1859c25583269c6f6539b762
-          export_default_credentials: true
+#      - name: Setup Cloud SDK
+#        uses: google-github-actions/setup-gcloud@v0.2.0
+#        with:
+#          project_id: githubaction-cloudrun-test
+#          service_account_key: 756f19ffef18ef1d1859c25583269c6f6539b762
+#          export_default_credentials: true
           
       - name: Authorize Docker push
         run: gcloud auth configure-docker
