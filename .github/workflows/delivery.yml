@@ -8,7 +8,7 @@ on:
 env:
   GCP_PROJECT: ${{ secrets.GCP_PROJECT }}
   GCP_REGION: ${{ secrets.GCP_REGION }}
-  IMAGE: asia.gcr.io/${{ secrets.GCP_PROJECT }}/foobar:${{ github.sha }}
+  IMAGE: gcr.io/githubaction-cloudrun-test/helloworld@sha256:74249e002d4585eb1bd1f37ca0dad956e74d76ddb8ebb179c408c0ae8a7b463b
 
 jobs:
   delivery:
